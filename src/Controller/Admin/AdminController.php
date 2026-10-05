@@ -15,13 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin')]
 final class AdminController extends AbstractController
 {
-    #[Route('', name: 'admin_index')]
-    public function index(): Response
-    {
-        return $this->redirectToRoute('admin_dashboard');
-    }
 
-    #[Route('/dashboard', name: 'admin_dashboard')]
+    #[Route('', name: 'admin_dashboard')]
     public function dashboard(): Response
     {
         return $this->render('admin/dashboard.html.twig', SampleData::dashboard());
