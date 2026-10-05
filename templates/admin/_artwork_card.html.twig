@@ -1,0 +1,32 @@
+{# Partial: one artwork card. Expects: artwork, status_class (pending|approved|rejected), show_actions (bool) #}
+<div class="clean-artwork-card{{ show_actions ? ' pending-artwork-card' : '' }}">
+
+    {% if artwork.img %}
+        {# TODO (later): artwork images will live in public/uploads/artworks/ #}
+        <img src="{{ asset('images/' ~ artwork.img) }}" alt="{{ artwork.title }}" class="clean-artwork-image">
+    {% else %}
+        <div class="clean-no-image">NO IMAGE</div>
+    {% endif %}
+
+    <div class="clean-artwork-info">
+        <span class="clean-artist-name">{{ artwork.artist }}</span>
+        <h4>{{ artwork.title }}</h4>
+
+        {% if artwork.desc is not empty %}
+            <p class="artwork-description">{{ artwork.desc|nl2br }}</p>
+        {% endif %}
+
+        <div class="clean-artwork-bottom">
+            <strong>₱{{ artwork.price|number_format(2) }}</strong>
+            <span class="artwork-status {{ status_class }}-status">{{ status_class|upper }}</span>
+        </div>
+
+        {% if show_actions %}
+            <div class="artwork-admin-actions">
+                <form method="post"><input type="hidden" name="artwork_id" value="{{ artwork.id }}"><input type="hidden" name="action" value="approve"><button type="submit" class="artwork-approve-button">APPROVE</button></form>
+                <form method="post"><input type="hidden" name="artwork_id" value="{{ artwork.id }}"><input type="hidden" name="action" value="reject"><button type="submit" class="artwork-reject-button">REJECT</button></form>
+            </div>
+        {% endif %}
+    </div>
+
+</div>

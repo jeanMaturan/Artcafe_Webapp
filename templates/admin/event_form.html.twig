@@ -1,0 +1,81 @@
+{# One template for both Add and Edit Event. Variables: mode (add|edit), event #}
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ mode == 'add' ? 'Add Event' : 'Edit Event' }}{% endblock %}
+{% set nav_current = 'events' %}
+{% block topbar %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_add_artwork.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+
+    <div class="admin-page-title">
+        <h2>{{ mode == 'add' ? 'ADD EVENT' : 'EDIT EVENT' }}</h2>
+        <p>{{ mode == 'add' ? 'Create a new cafe event.' : 'Update the details for this event.' }}</p>
+    </div>
+
+    <div class="admin-form-card">
+
+        {% if mode == 'edit' and event.image %}
+            <img src="{{ asset('images/' ~ event.image) }}" alt="{{ event.name }}" class="product-current-image">
+        {% endif %}
+
+        {# TODO (later): replace with a Symfony FormType (EventType) #}
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="admin-form-group">
+                <label for="event_name">EVENT NAME</label>
+                <input type="text" id="event_name" name="event_name" value="{{ event.name }}"{% if mode == 'add' %} placeholder="e.g. Paint &amp; Sip Night"{% endif %} required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="description">DESCRIPTION</label>
+                <textarea id="description" name="description" rows="4"{% if mode == 'add' %} placeholder="What's this event about?"{% endif %}>{{ event.description }}</textarea>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="event_date">DATE</label>
+                <input type="date" id="event_date" name="event_date" value="{{ event.date }}" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="event_time">TIME</label>
+                <input type="time" id="event_time" name="event_time" value="{{ event.time }}" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="location">LOCATION</label>
+                <input type="text" id="location" name="location" value="{{ event.location }}"{% if mode == 'add' %} placeholder="e.g. Maturan's Art Cafe"{% endif %}>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="event_image">{{ mode == 'add' ? 'EVENT IMAGE' : 'REPLACE IMAGE' }}</label>
+                <input type="file" id="event_image" name="event_image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                <small class="admin-file-help">{{ mode == 'add' ? 'JPG, PNG, or WEBP. Optional.' : 'Leave empty to keep the current image.' }}</small>
+            </div>
+
+            <div class="admin-form-group admin-checkbox-group">
+                <label>
+                    <input type="checkbox" name="make_active"{{ event.status == 'Active' ? ' checked' : '' }}>
+                    Make this the active event
+                </label>
+                <small class="admin-file-help">Only one event can be active at a time. This is the event artists apply to join.</small>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{{ path('admin_events') }}" class="admin-cancel-button">CANCEL</a>
+                <button type="submit" class="admin-login-button">{{ mode == 'add' ? 'ADD EVENT' : 'SAVE CHANGES' }}</button>
+            </div>
+
+        </form>
+    </div>
+
+</main>
+{% endblock %}

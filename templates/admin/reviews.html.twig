@@ -1,0 +1,63 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Review Management{% endblock %}
+{% set nav_current = 'reviews' %}
+{% block body_attr %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_reviews.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="admin-reviews">
+
+    <div class="admin-reviews-heading">
+        <p>CUSTOMER FEEDBACK</p>
+        <h2>REVIEW <span>MANAGEMENT</span></h2>
+        <p>Review customer submissions and approve or reject them before they appear publicly.</p>
+    </div>
+
+    {% if reviews is not empty %}
+        <div class="admin-reviews-list">
+            {% for review in reviews %}
+                <div class="admin-review-card">
+
+                    <div class="admin-review-header">
+                        <div>
+                            <h3>{{ review.name }}</h3>
+                            <p>{{ review.email }}</p>
+                        </div>
+                        <span class="review-status {{ review.status|lower }}">{{ review.status }}</span>
+                    </div>
+
+                    <div class="admin-review-rating">{% for i in 1..5 %}{{ i <= review.rating ? '★' : '☆' }}{% endfor %}</div>
+
+                    <p class="admin-review-text">{{ review.text|nl2br }}</p>
+                    <p class="admin-review-date">Submitted: {{ review.created_at }}</p>
+
+                    {% if review.status == 'Pending' %}
+                        <div class="admin-review-actions">
+                            <form method="post"><input type="hidden" name="review_id" value="{{ review.id }}"><input type="hidden" name="action" value="approve"><button type="submit" class="approve-review-btn">APPROVE</button></form>
+                            <form method="post"><input type="hidden" name="review_id" value="{{ review.id }}"><input type="hidden" name="action" value="reject"><button type="submit" class="reject-review-btn">REJECT</button></form>
+                        </div>
+                    {% endif %}
+
+                    <div class="admin-review-actions">
+                        <form method="post"><input type="hidden" name="review_id" value="{{ review.id }}"><input type="hidden" name="action" value="delete"><button type="submit" class="reject-review-btn">DELETE</button></form>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-admin-reviews">
+            <h3>NO REVIEWS YET</h3>
+            <p>Customer reviews will appear here once they are submitted.</p>
+        </div>
+    {% endif %}
+
+</main>
+{% endblock %}

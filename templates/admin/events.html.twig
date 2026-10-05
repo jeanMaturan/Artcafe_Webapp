@@ -1,0 +1,60 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Event Management{% endblock %}
+{% set nav_current = 'events' %}
+{% block topbar %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_artworks.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_subscribers.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_events.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+
+    <div class="admin-page-title product-page-title">
+        <div>
+            <h2>EVENT MANAGEMENT</h2>
+            <p>Create and manage cafe events. Only one event can be Active at a time.</p>
+        </div>
+        <a href="{{ path('admin_event_add') }}" class="add-artwork-button product-add-button">+ ADD EVENT</a>
+    </div>
+
+    <div class="admin-card">
+        {% if events is empty %}
+            <div class="clean-empty"><p>No events yet. Click "Add Event" to create one.</p></div>
+        {% else %}
+            <table class="admin-table">
+                <thead>
+                    <tr><th>EVENT</th><th>DATE</th><th>TIME</th><th>LOCATION</th><th>STATUS</th><th>ACTIONS</th></tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.date ? event.date|date('M j, Y') : '—' }}</td>
+                            <td>{{ event.time ? event.time|date('g:i A') : '—' }}</td>
+                            <td>{{ event.location is not empty ? event.location : '—' }}</td>
+                            <td><span class="artwork-status {{ event.status == 'Active' ? 'approved-status' : 'rejected-status' }}">{{ event.status|upper }}</span></td>
+                            <td class="event-actions-cell">
+                                <a href="{{ path('admin_event_edit', {id: event.id}) }}" class="event-action-link">EDIT</a>
+                                {% if event.status != 'Active' %}
+                                    <form method="post"><input type="hidden" name="event_id" value="{{ event.id }}"><input type="hidden" name="action" value="set_active"><button type="submit" class="event-action-link">SET ACTIVE</button></form>
+                                {% else %}
+                                    <form method="post"><input type="hidden" name="event_id" value="{{ event.id }}"><input type="hidden" name="action" value="set_inactive"><button type="submit" class="event-action-link">DEACTIVATE</button></form>
+                                {% endif %}
+                                <form method="post"><input type="hidden" name="event_id" value="{{ event.id }}"><input type="hidden" name="action" value="delete"><button type="submit" class="event-action-link delete">DELETE</button></form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+</main>
+{% endblock %}

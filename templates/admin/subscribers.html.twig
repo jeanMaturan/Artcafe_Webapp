@@ -1,0 +1,48 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Subscribers{% endblock %}
+{% set nav_current = 'subscribers' %}
+{% block body_attr %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_subscribers.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="admin-page">
+
+    <div class="admin-title">
+        <h2>NEWSLETTER <span>SUBSCRIBERS</span></h2>
+        <p>Emails subscribed to updates, events, and promos.</p>
+    </div>
+
+    <div class="admin-card">
+        <form method="post">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>EMAIL</th>
+                        <th>SUBSCRIBED AT</th>
+                        <th><button type="submit" class="delete-selected-btn">DELETE SELECTED</button></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in subscribers %}
+                        <tr>
+                            <td>{{ s.id }}</td>
+                            <td>{{ s.email }}</td>
+                            <td>{{ s.subscribed_at }}</td>
+                            <td><input type="checkbox" name="subscriber_ids[]" value="{{ s.id }}" class="subscriber-checkbox"></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+</main>
+{% endblock %}

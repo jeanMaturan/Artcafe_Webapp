@@ -1,0 +1,32 @@
+{# Variable expected: active (dashboard|reservations|artists|artworks|products|events|reviews|messages|subscribers) #}
+{% set links = [
+    ['dashboard',    'admin_dashboard',    'Dashboard'],
+    ['reservations', 'admin_reservations', 'Reservations'],
+    ['artists',      'admin_artists',      'Artists'],
+    ['artworks',     'admin_artworks',     'Artworks'],
+    ['products',     'admin_products',     'Products'],
+    ['events',       'admin_events',       'Events'],
+    ['reviews',      'admin_reviews',      'Reviews'],
+    ['messages',     'admin_messages',     'Messages'],
+    ['subscribers',  'admin_subscribers',  'Subscribers'],
+] %}
+<aside class="dash-sidebar">
+
+    <div class="dash-brand">
+        <img src="{{ asset('images/logo.png') }}" alt="Maturan's Art Cafe">
+        <span>Maturan's<br>Art Cafe</span>
+    </div>
+
+    <nav class="dash-nav">
+        {% for link in links %}
+            <a href="{{ path(link[1]) }}" class="dash-nav-link{{ active == link[0] ? ' active' : '' }}">{{ link[2] }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="dash-sidebar-footer">
+        {# TODO (later): point these at the public site home and the Symfony logout route #}
+        <a href="#">View Site</a>
+        <a href="#">Logout</a>
+    </div>
+
+</aside>

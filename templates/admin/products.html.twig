@@ -1,0 +1,74 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Product Management{% endblock %}
+{% set nav_current = 'products' %}
+{% block topbar %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_artworks.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_products.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+
+    <div class="admin-page-title product-page-title">
+        <div>
+            <h2>PRODUCT MANAGEMENT</h2>
+            <p>Add and manage coffee, pastries, and merch available at the cafe.</p>
+        </div>
+        <a href="{{ path('admin_product_add', {category: active_category}) }}" class="add-artwork-button product-add-button">+ ADD PRODUCT</a>
+    </div>
+
+    <div class="product-tabs">
+        {% for cat in categories %}
+            <a href="{{ path('admin_products', {category: cat}) }}" class="product-tab{{ active_category == cat ? ' active' : '' }}">
+                {{ cat|upper }} <span>{{ category_counts[cat] }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <section class="clean-admin-section artwork-section">
+        {% if products is empty %}
+            <div class="clean-empty"><p>No {{ active_category|lower }} items yet. Click "Add Product" to create one.</p></div>
+        {% else %}
+            <div class="clean-artwork-grid">
+                {% for product in products %}
+                    <div class="clean-artwork-card">
+
+                        {% if product.image %}
+                            {# TODO (later): uploaded product images will live in public/uploads/products/ #}
+                            <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}" class="clean-artwork-image">
+                        {% else %}
+                            <div class="clean-no-image">NO IMAGE</div>
+                        {% endif %}
+
+                        <div class="clean-artwork-info">
+                            <h4>{{ product.name }}</h4>
+                            {% if product.desc is not empty %}
+                                <p class="artwork-description">{{ product.desc|nl2br }}</p>
+                            {% endif %}
+
+                            <div class="clean-artwork-bottom">
+                                <strong>₱{{ product.price|number_format(2) }}</strong>
+                                <span class="artwork-status {{ product.status == 'Active' ? 'approved-status' : 'rejected-status' }}">{{ product.status|upper }}</span>
+                            </div>
+
+                            <div class="artwork-admin-actions">
+                                <a href="{{ path('admin_product_edit', {id: product.id}) }}" class="artwork-approve-button product-edit-link">EDIT</a>
+                                <form method="post"><input type="hidden" name="product_id" value="{{ product.id }}"><input type="hidden" name="action" value="toggle_status"><button type="submit" class="product-toggle-button">{{ product.status == 'Active' ? 'DEACTIVATE' : 'ACTIVATE' }}</button></form>
+                                <form method="post"><input type="hidden" name="product_id" value="{{ product.id }}"><input type="hidden" name="action" value="delete"><button type="submit" class="artwork-reject-button">DELETE</button></form>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+{% endblock %}

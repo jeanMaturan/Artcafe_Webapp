@@ -1,0 +1,128 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Reservations{% endblock %}
+{% set nav_current = 'reservations' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_reservations.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+
+    <div class="admin-page-title">
+        <h2>RESERVATIONS</h2>
+        <p>View and manage all table reservations.</p>
+        <p class="capacity-note">
+            Table capacity: <strong>{{ max_tables }} tables</strong>
+            per {{ slot_minutes }}-minute slot
+            ({{ guests_per_table }} guests per table — larger parties use more than one table).
+        </p>
+    </div>
+
+    {# ===== AVAILABILITY BY TIME SLOT ===== #}
+    <div class="availability-summary">
+        <h3>Availability by Time Slot</h3>
+
+        {% if availability_slots is empty %}
+            <p class="availability-empty">No upcoming reservations yet — all {{ max_tables }} tables are open for every slot.</p>
+        {% else %}
+            <div class="availability-table">
+                <div class="availability-row availability-head">
+                    <span>Date</span><span>Time</span><span>Booked</span><span>Tables Left</span>
+                </div>
+                {% for slot in availability_slots %}
+                    <div class="availability-row{{ slot.left == 0 ? ' availability-full' : '' }}">
+                        <span>{{ slot.date|date('F j, Y') }}</span>
+                        <span>{{ slot.time|date('g:i A') }}</span>
+                        <span>{{ slot.booked }} / {{ max_tables }}</span>
+                        <span class="availability-left-value">{{ slot.left == 0 ? 'FULL' : slot.left ~ ' left' }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# ===== OVERBOOKED SLOTS ===== #}
+    {% if conflict_slots is not empty %}
+        <div class="conflict-summary">
+            <h3>⚠ Overbooked Slots</h3>
+            <p>These time slots have more reservations than available tables. Review and cancel/delete reservations below to resolve them.</p>
+            <ul>
+                {% for c in conflict_slots %}
+                    <li>
+                        {{ c.date|date('F j, Y') }} at {{ c.time|date('g:i A') }} —
+                        <strong>{{ c.count }}</strong> reservations
+                        ({{ c.count - max_tables }} over the {{ max_tables }}-table limit)
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {# ===== FILTERS ===== #}
+    <div class="reservation-filters">
+        <a href="{{ path('admin_reservations', {filter: 'upcoming'}) }}" class="reservation-filter-link{{ filter == 'upcoming' ? ' active' : '' }}">Upcoming</a>
+        <a href="{{ path('admin_reservations', {filter: 'past'}) }}" class="reservation-filter-link{{ filter == 'past' ? ' active' : '' }}">Past</a>
+        <a href="{{ path('admin_reservations', {filter: 'all'}) }}" class="reservation-filter-link{{ filter == 'all' ? ' active' : '' }}">All</a>
+    </div>
+
+    {# ===== RESERVATION LIST ===== #}
+    {% if reservations is empty %}
+        <div class="admin-empty">
+            <h3>No reservations found.</h3>
+            <p>Reservations made through the site will appear here.</p>
+        </div>
+    {% else %}
+        <div class="admin-artist-list">
+            {% for r in reservations %}
+                <div class="admin-artist-card{{ r.conflict ? ' conflict-card' : '' }}">
+
+                    <div class="admin-artist-info">
+                        <div class="admin-artist-top">
+                            <h3>{{ r.reservation_name }}</h3>
+                            <span class="artist-status guest-badge">{{ r.guests }} guest{{ r.guests == 1 ? '' : 's' }}</span>
+                            <span class="artist-status status-{{ r.status|lower|replace({'-': ''}) }}">{{ r.status }}</span>
+                            {% if r.conflict %}<span class="artist-status conflict-badge">CONFLICT</span>{% endif %}
+                        </div>
+
+                        {% if r.payment_type is not empty %}
+                            <div class="artist-detail payment-detail">
+                                <strong>Payment:</strong>
+                                <span class="artist-status payment-badge-{{ r.payment_type|lower }}">{{ r.payment_type }}</span>
+                                ₱{{ r.payment_amount|number_format(2) }}
+                                {% if r.payment_reference is not empty %}— Ref# {{ r.payment_reference }}{% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="artist-detail"><strong>Date:</strong> {{ r.reservation_date|date('F j, Y') }}</div>
+                        <div class="artist-detail"><strong>Time:</strong> {{ r.reservation_time|date('g:i A') }}</div>
+                        <div class="artist-detail"><strong>Phone:</strong> {{ r.reservation_phone }}</div>
+                        {% if r.user_email is not empty %}
+                            <div class="artist-detail"><strong>Email:</strong> {{ r.user_email }}</div>
+                        {% endif %}
+                    </div>
+
+                    {# Buttons are visual only for now. TODO (later): POST to a controller route. #}
+                    <div class="admin-artist-actions">
+                        {% if r.status == 'Pending' %}
+                            <form method="post"><input type="hidden" name="reservation_id" value="{{ r.reservation_id }}"><input type="hidden" name="action" value="seated"><button type="submit" class="approve-button">MARK AS SEATED</button></form>
+                            <form method="post"><input type="hidden" name="reservation_id" value="{{ r.reservation_id }}"><input type="hidden" name="action" value="cancel"><button type="submit" class="reject-button">CANCEL</button></form>
+                        {% endif %}
+                        {% if r.status == 'Seated' %}
+                            <form method="post"><input type="hidden" name="reservation_id" value="{{ r.reservation_id }}"><input type="hidden" name="action" value="complete"><button type="submit" class="approve-button">MARK AS COMPLETED</button></form>
+                            <form method="post"><input type="hidden" name="reservation_id" value="{{ r.reservation_id }}"><input type="hidden" name="action" value="cancel"><button type="submit" class="reject-button">CANCEL</button></form>
+                        {% endif %}
+                        <form method="post"><input type="hidden" name="reservation_id" value="{{ r.reservation_id }}"><input type="hidden" name="action" value="delete"><button type="submit" class="reject-button">DELETE</button></form>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Messages{% endblock %}
+{% set nav_current = 'messages' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_messages.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="messages-page">
+
+    <div class="messages-header">
+        <h1>CUSTOMER <span>MESSAGES.</span></h1>
+        <p>Messages submitted through the Contact page.</p>
+        <span class="msgr-unread-badge" data-count="{{ unread_count }}"{% if unread_count == 0 %} style="display:none;"{% endif %}>{{ unread_count }} unread</span>
+    </div>
+
+    {% if threads is not empty %}
+        <div class="msgr-app" data-mode="admin">
+
+            {# ----- conversation list ----- #}
+            <div class="msgr-list">
+                {% for t in threads %}
+                    <div class="msgr-list-item{{ t.status == 'Unread' ? ' unread' : '' }}" data-message-id="{{ t.id }}">
+                        <span class="msgr-unread-dot"></span>
+                        <div class="msgr-item-body">
+                            <div class="msgr-item-top">
+                                <span class="msgr-item-subject">{{ t.subject }}</span>
+                                <span class="msgr-item-time">{{ t.last_activity|date('M j') }}</span>
+                            </div>
+                            <div class="msgr-item-from">{{ t.name }}</div>
+                            {% set last = t.replies is empty ? null : t.replies|last %}
+                            <div class="msgr-item-preview">
+                                {% set preview = last ? last.text : t.message %}
+                                {{ last and last.sender == 'admin' ? 'You: ' : '' }}{{ preview|length > 70 ? preview|slice(0, 70) ~ '…' : preview }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# ----- selected conversation ----- #}
+            <div class="msgr-view">
+
+                <div class="msgr-placeholder active">
+                    <p>Select a conversation to view messages</p>
+                </div>
+
+                {% for t in threads %}
+                    <div class="msgr-panel" data-message-id="{{ t.id }}">
+
+                        <div class="msgr-panel-header">
+                            <button type="button" class="msgr-back-btn">‹</button>
+                            <div class="msgr-panel-heading">
+                                <div class="msgr-panel-subject">{{ t.subject }}</div>
+                                <div class="msgr-panel-meta">{{ t.name }} &middot; {{ t.email }}</div>
+                            </div>
+                            <div class="message-status">{{ t.status }}</div>
+                        </div>
+
+                        <div class="conversation-thread">
+                            <div class="thread-bubble thread-customer">
+                                <div class="thread-bubble-meta">{{ t.name }} &middot; {{ t.created_at|date('M j, Y g:i A') }}</div>
+                                <div class="thread-bubble-text">{{ t.message|nl2br }}</div>
+                            </div>
+
+                            {% for reply in t.replies %}
+                                {% set is_admin = reply.sender == 'admin' %}
+                                <div class="thread-bubble {{ is_admin ? 'thread-admin' : 'thread-customer' }}">
+                                    <div class="thread-bubble-meta">
+                                        {{ is_admin ? "Maturan's Art Cafe (You)" : t.name }} &middot; {{ reply.created_at|date('M j, Y g:i A') }}
+                                    </div>
+                                    <div class="thread-bubble-text">{{ reply.text|nl2br }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <form method="post" class="reply-form">
+                            <input type="hidden" name="message_id" value="{{ t.id }}">
+                            <input type="hidden" name="action" value="reply">
+                            <textarea name="admin_reply" class="admin-reply-input" placeholder="Write a reply..." required></textarea>
+                            <button type="submit" class="message-button">SEND REPLY</button>
+                        </form>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    {% else %}
+        <div class="no-messages">No customer messages yet.</div>
+    {% endif %}
+
+</main>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin-messages.js') }}"></script>
+{% endblock %}

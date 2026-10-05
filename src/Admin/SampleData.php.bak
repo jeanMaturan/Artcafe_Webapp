@@ -1,0 +1,211 @@
+<?php
+
+namespace App\Admin;
+
+/**
+ * TEMPORARY hard-coded data so the admin pages can be viewed.
+ *
+ * Nothing here touches a database. When you add Doctrine later, each method
+ * below is replaced by a repository call (see MIGRATION.md, Part 5), and this
+ * file gets deleted.
+ */
+final class SampleData
+{
+    public const MAX_TABLES = 10;
+    public const SLOT_MINUTES = 30;
+    public const GUESTS_PER_TABLE = 4;
+
+    public const PRODUCT_CATEGORIES = ['Coffee', 'Pastries', 'Merch'];
+
+    public static function dashboard(): array
+    {
+        return [
+            'total_reservations' => 48,
+            'upcoming_reservations' => 9,
+            'total_subscribers' => 126,
+            'unread_messages' => 3,
+            'pending_artists' => 2,
+            'pending_artworks' => 4,
+            'pending_reviews' => 3,
+            'current_year' => 2026,
+            'monthly_counts' => [
+                'Jan' => 2, 'Feb' => 4, 'Mar' => 3, 'Apr' => 6, 'May' => 5, 'Jun' => 8,
+                'Jul' => 7, 'Aug' => 9, 'Sep' => 4, 'Oct' => 0, 'Nov' => 0, 'Dec' => 0,
+            ],
+            'recent_reservations' => [
+                ['reservation_name' => 'Maria Santos', 'reservation_date' => '2026-10-10', 'reservation_time' => '17:00:00', 'guests' => 4],
+                ['reservation_name' => 'John Reyes', 'reservation_date' => '2026-10-09', 'reservation_time' => '15:30:00', 'guests' => 2],
+                ['reservation_name' => 'Lia Cruz', 'reservation_date' => '2026-10-08', 'reservation_time' => '18:00:00', 'guests' => 1],
+                ['reservation_name' => 'Kyle Tan', 'reservation_date' => '2026-10-07', 'reservation_time' => '14:00:00', 'guests' => 6],
+            ],
+        ];
+    }
+
+    public static function reservations(): array
+    {
+        return [
+            ['reservation_id' => 1, 'reservation_name' => 'Maria Santos', 'guests' => 4, 'status' => 'Pending',
+                'payment_type' => 'Downpayment', 'payment_amount' => 300.00, 'payment_reference' => 'GC-48213097',
+                'reservation_date' => '2026-10-10', 'reservation_time' => '17:00:00',
+                'reservation_phone' => '0917 123 4567', 'user_email' => 'maria@example.com', 'conflict' => true],
+            ['reservation_id' => 2, 'reservation_name' => 'John Reyes', 'guests' => 2, 'status' => 'Seated',
+                'payment_type' => 'Full', 'payment_amount' => 300.00, 'payment_reference' => 'GC-48213155',
+                'reservation_date' => '2026-10-09', 'reservation_time' => '15:30:00',
+                'reservation_phone' => '0918 765 4321', 'user_email' => 'john@example.com', 'conflict' => false],
+            ['reservation_id' => 3, 'reservation_name' => 'Lia Cruz', 'guests' => 1, 'status' => 'Completed',
+                'payment_type' => 'Full', 'payment_amount' => 150.00, 'payment_reference' => '',
+                'reservation_date' => '2026-10-02', 'reservation_time' => '18:00:00',
+                'reservation_phone' => '0920 555 0100', 'user_email' => '', 'conflict' => false],
+            ['reservation_id' => 4, 'reservation_name' => 'Kyle Tan', 'guests' => 6, 'status' => 'Cancelled',
+                'payment_type' => 'Downpayment', 'payment_amount' => 450.00, 'payment_reference' => 'GC-48200012',
+                'reservation_date' => '2026-09-28', 'reservation_time' => '14:00:00',
+                'reservation_phone' => '0915 222 3344', 'user_email' => 'kyle@example.com', 'conflict' => false],
+            ['reservation_id' => 5, 'reservation_name' => 'Anna Lim', 'guests' => 3, 'status' => 'No-Show',
+                'payment_type' => '', 'payment_amount' => 0, 'payment_reference' => '',
+                'reservation_date' => '2026-09-25', 'reservation_time' => '16:30:00',
+                'reservation_phone' => '0999 888 7766', 'user_email' => 'anna@example.com', 'conflict' => false],
+        ];
+    }
+
+    public static function availabilitySlots(): array
+    {
+        return [
+            ['date' => '2026-10-09', 'time' => '15:30:00', 'booked' => 3, 'left' => 7],
+            ['date' => '2026-10-10', 'time' => '17:00:00', 'booked' => 10, 'left' => 0],
+            ['date' => '2026-10-11', 'time' => '14:00:00', 'booked' => 6, 'left' => 4],
+        ];
+    }
+
+    public static function conflictSlots(): array
+    {
+        return [['date' => '2026-10-10', 'time' => '17:00:00', 'count' => 12]];
+    }
+
+    public static function activeEvent(): array
+    {
+        return ['name' => 'Paint & Sip Night', 'max_artists' => 5, 'approved_count' => 2];
+    }
+
+    public static function artists(): array
+    {
+        return [
+            ['event_artist_id' => 1, 'artist_name' => 'Mia Dela Cruz', 'status' => 'Pending', 'email' => 'mia@example.com',
+                'contact' => '0917 000 1111', 'bio' => "Watercolor and ink illustrator based in Cebu.\nLooking to showcase a small botanical series."],
+            ['event_artist_id' => 2, 'artist_name' => 'Mark Villanueva', 'status' => 'Approved', 'email' => 'mark@example.com',
+                'contact' => '0918 000 2222', 'bio' => 'Digital painter and sticker designer.'],
+            ['event_artist_id' => 3, 'artist_name' => 'Anna Ramos', 'status' => 'Approved', 'email' => 'anna@example.com',
+                'contact' => '0919 000 3333', 'bio' => ''],
+            ['event_artist_id' => 4, 'artist_name' => 'Kyle Ong', 'status' => 'Rejected', 'email' => 'kyle@example.com',
+                'contact' => '0920 000 4444', 'bio' => 'Mixed media.'],
+        ];
+    }
+
+    public static function artworks(): array
+    {
+        $a = fn (int $id, string $artist, string $title, string $desc, float $price, string $status, ?string $img) =>
+            compact('id', 'artist', 'title', 'desc', 'price', 'status', 'img');
+
+        return [
+            $a(1, 'Mia Dela Cruz', 'Morning Bloom', 'Watercolor on cold-press paper.', 3500, 'Pending', 'pattern1.png'),
+            $a(2, 'Mark Villanueva', 'Neon Alley', 'Digital print, limited run of 20.', 1800, 'Pending', null),
+            $a(3, 'Anna Ramos', 'Quiet Harbor', 'Acrylic on canvas, 18x24 in.', 6200, 'Approved', 'pattern2.png'),
+            $a(4, 'Mark Villanueva', 'Coffee Ghosts', '', 950, 'Approved', null),
+            $a(5, 'Kyle Ong', 'Untitled No. 4', 'Mixed media collage.', 2400, 'Rejected', null),
+        ];
+    }
+
+    public static function products(): array
+    {
+        $p = fn (int $id, string $category, string $name, string $desc, float $price, string $status, ?string $image) =>
+            compact('id', 'category', 'name', 'desc', 'price', 'status', 'image');
+
+        return [
+            $p(1, 'Coffee', 'Cappuccino', 'Espresso with steamed milk and a thick foam cap.', 120, 'Active', 'capuccino.jpg'),
+            $p(2, 'Coffee', 'Caramel Macchiato', 'Vanilla, steamed milk, espresso and caramel drizzle.', 145, 'Active', 'caramelmacchiato.png'),
+            $p(3, 'Coffee', 'Mocha Dream', 'Rich chocolate and espresso, topped with cream.', 150, 'Inactive', 'mochadream.jpg'),
+            $p(4, 'Coffee', 'Chocolate Latte', '', 130, 'Active', 'chocolatelatte.png'),
+            $p(5, 'Pastries', 'Butter Croissant', 'Flaky, buttery, baked every morning.', 85, 'Active', 'butterCroissant.jpg'),
+            $p(6, 'Pastries', 'Cinnamon Roll', 'Warm roll with cream cheese glaze.', 95, 'Active', 'cinnamonroll.jpg'),
+            $p(7, 'Merch', 'Cafe T-Shirt', 'Soft cotton tee with the Art Cafe logo.', 450, 'Active', 'shirt.jpg'),
+            $p(8, 'Merch', 'Canvas Tote', 'Everyday tote, screen-printed.', 320, 'Active', 'tote.png'),
+            $p(9, 'Merch', 'Sticker Pack', 'Set of 6 vinyl stickers.', 120, 'Inactive', 'stickers.jpg'),
+        ];
+    }
+
+    public static function product(int $id): ?array
+    {
+        foreach (self::products() as $product) {
+            if ($product['id'] === $id) {
+                return $product;
+            }
+        }
+
+        return null;
+    }
+
+    public static function events(): array
+    {
+        return [
+            ['id' => 1, 'name' => 'Paint & Sip Night', 'description' => 'Relaxed painting night with live local artists.',
+                'date' => '2026-11-14', 'time' => '18:00', 'location' => "Maturan's Art Cafe", 'status' => 'Active', 'image' => 'eventpic.png'],
+            ['id' => 2, 'name' => 'Sketch & Brew Morning', 'description' => 'Bring a sketchbook, we bring the coffee.',
+                'date' => '2026-09-06', 'time' => '09:00', 'location' => "Maturan's Art Cafe", 'status' => 'Inactive', 'image' => null],
+            ['id' => 3, 'name' => 'Open Mic & Zine Fair', 'description' => '',
+                'date' => '2026-12-05', 'time' => '16:30', 'location' => '', 'status' => 'Inactive', 'image' => null],
+        ];
+    }
+
+    public static function event(int $id): ?array
+    {
+        foreach (self::events() as $event) {
+            if ($event['id'] === $id) {
+                return $event;
+            }
+        }
+
+        return null;
+    }
+
+    public static function reviews(): array
+    {
+        return [
+            ['id' => 1, 'name' => 'Maria Santos', 'email' => 'maria@example.com', 'status' => 'Pending', 'rating' => 5,
+                'text' => "Loved the mocha and the art on the walls.\nWill definitely be back!", 'created_at' => '2026-10-03 14:22:10'],
+            ['id' => 2, 'name' => 'John Reyes', 'email' => 'john@example.com', 'status' => 'Approved', 'rating' => 4,
+                'text' => 'Cozy place, a bit crowded on weekends.', 'created_at' => '2026-09-28 10:05:44'],
+            ['id' => 3, 'name' => 'Lia Cruz', 'email' => 'lia@example.com', 'status' => 'Rejected', 'rating' => 1,
+                'text' => 'Spam text goes here.', 'created_at' => '2026-09-20 21:40:02'],
+        ];
+    }
+
+    public static function threads(): array
+    {
+        return [
+            ['id' => 1, 'subject' => 'Birthday booking for 12 people', 'name' => 'Maria Santos', 'email' => 'maria@example.com',
+                'status' => 'Unread', 'created_at' => '2026-10-03 09:15:00', 'last_activity' => '2026-10-03 09:15:00',
+                'message' => "Hi! Can we book the whole cafe for a birthday on Nov 20?\nAround 12 people.",
+                'replies' => []],
+            ['id' => 2, 'subject' => 'Do you accept artwork consignment?', 'name' => 'Mark Villanueva', 'email' => 'mark@example.com',
+                'status' => 'Replied', 'created_at' => '2026-10-01 13:00:00', 'last_activity' => '2026-10-02 10:30:00',
+                'message' => 'I have a few prints I would like to sell at the cafe. How does it work?',
+                'replies' => [
+                    ['sender' => 'admin', 'text' => 'Hello Mark! Yes, please register as an artist on our site and we will review your work.', 'created_at' => '2026-10-01 15:20:00'],
+                    ['sender' => 'customer', 'text' => 'Thank you, registering now!', 'created_at' => '2026-10-02 10:30:00'],
+                ]],
+            ['id' => 3, 'subject' => 'Lost umbrella', 'name' => 'Anna Ramos', 'email' => 'anna@example.com',
+                'status' => 'Unread', 'created_at' => '2026-09-30 17:45:00', 'last_activity' => '2026-09-30 17:45:00',
+                'message' => 'I think I left a black umbrella near the window table yesterday.',
+                'replies' => []],
+        ];
+    }
+
+    public static function subscribers(): array
+    {
+        return [
+            ['id' => 126, 'email' => 'maria@example.com', 'subscribed_at' => '2026-10-03 08:12:31'],
+            ['id' => 125, 'email' => 'john@example.com', 'subscribed_at' => '2026-10-01 19:40:05'],
+            ['id' => 124, 'email' => 'lia@example.com', 'subscribed_at' => '2026-09-27 11:03:58'],
+            ['id' => 123, 'email' => 'kyle@example.com', 'subscribed_at' => '2026-09-22 16:21:12'],
+        ];
+    }
+}

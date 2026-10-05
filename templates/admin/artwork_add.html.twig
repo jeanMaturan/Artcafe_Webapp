@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Artwork | Maturan's Art Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_add_artwork.css') }}">
+</head>
+<body class="admin-dashboard-page">
+
+{# NOTE: this page used an older header layout (no sidebar) in the PHP version.
+   Kept as-is for now; later, fold it into admin/base.html.twig like the others. #}
+<header class="admin-header">
+    <div class="admin-header-left">
+        <img src="{{ asset('images/logo.png') }}" alt="Maturan's Art Cafe Logo" class="admin-header-logo">
+        <div>
+            <h1>ADMIN PANEL</h1>
+            <p>Maturan's Art Cafe</p>
+        </div>
+    </div>
+    <div class="admin-header-right">
+        <span>Welcome, Admin</span>
+        <a href="{{ path('admin_artworks') }}" class="admin-logout-button">ARTWORKS</a>
+        <a href="#" class="admin-logout-button">LOGOUT</a>
+    </div>
+</header>
+
+<main class="admin-content">
+
+    <div class="admin-page-title">
+        <h2>ADD ARTWORK</h2>
+        <p>Adding artwork for <strong>{{ artist_name }}</strong></p>
+    </div>
+
+    <div class="admin-form-card">
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="admin-form-group">
+                <label for="title">ARTWORK TITLE</label>
+                <input type="text" id="title" name="title" placeholder="Enter artwork title" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="description">DESCRIPTION</label>
+                <textarea id="description" name="description" rows="5" placeholder="Enter a short description of the artwork"></textarea>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="price">PRICE</label>
+                <input type="number" id="price" name="price" placeholder="0.00" min="0" step="0.01" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="artwork_image">ARTWORK IMAGE</label>
+                <input type="file" id="artwork_image" name="artwork_image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
+                <small class="admin-file-help">JPG, PNG, or WEBP only.</small>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{{ path('admin_artworks') }}" class="admin-cancel-button">CANCEL</a>
+                <button type="submit" class="admin-login-button">ADD ARTWORK</button>
+            </div>
+
+        </form>
+    </div>
+
+</main>
+
+<script src="{{ asset('js/admin-static.js') }}"></script>
+</body>
+</html>

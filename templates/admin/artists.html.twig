@@ -1,0 +1,93 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Artist Applications{% endblock %}
+{% set nav_current = 'artists' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+
+    <div class="admin-page-title">
+        <h2>ARTIST APPLICATIONS</h2>
+        <p>Manage artists who want to participate in the upcoming event.</p>
+    </div>
+
+    {% if event is not null %}
+        <div class="admin-event-card">
+            <div>
+                <span class="admin-small-label">ACTIVE EVENT</span>
+                <h3>{{ event.name }}</h3>
+            </div>
+            <div class="artist-slot-info">
+                <div>
+                    <strong>{{ event.approved_count }} / {{ event.max_artists }}</strong>
+                    <span>Approved Artists</span>
+                </div>
+                <div>
+                    <strong>{{ remaining_slots }}</strong>
+                    <span>Slots Remaining</span>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="admin-message error">No active event is currently available.</div>
+    {% endif %}
+
+    <div class="admin-section-title">
+        <h3>REGISTERED ARTISTS</h3>
+    </div>
+
+    {% if artists is empty %}
+        <div class="admin-empty">
+            <h3>No artist applications yet.</h3>
+            <p>Artists who register for the event will appear here.</p>
+        </div>
+    {% else %}
+        <div class="admin-artist-list">
+            {% for artist in artists %}
+                <div class="admin-artist-card">
+
+                    <div class="admin-artist-info">
+                        <div class="admin-artist-top">
+                            <h3>{{ artist.artist_name }}</h3>
+                            <span class="artist-status {{ artist.status|lower }}">{{ artist.status }}</span>
+                        </div>
+                        <div class="artist-detail"><strong>Email:</strong> {{ artist.email }}</div>
+                        <div class="artist-detail"><strong>Contact:</strong> {{ artist.contact }}</div>
+                        {% if artist.bio is not empty %}
+                            <div class="artist-bio">
+                                <strong>About the Artist:</strong>
+                                <p>{{ artist.bio|nl2br }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# Buttons are visual only for now. TODO (later): POST to a controller route. #}
+                    <div class="admin-artist-actions">
+                        {% if artist.status == 'Pending' %}
+                            {% if event.approved_count < event.max_artists %}
+                                <form method="post"><input type="hidden" name="event_artist_id" value="{{ artist.event_artist_id }}"><input type="hidden" name="action" value="approve"><button type="submit" class="approve-button">APPROVE</button></form>
+                            {% else %}
+                                <span class="full-label">EVENT FULL</span>
+                            {% endif %}
+                            <form method="post"><input type="hidden" name="event_artist_id" value="{{ artist.event_artist_id }}"><input type="hidden" name="action" value="reject"><button type="submit" class="reject-button">REJECT</button></form>
+                        {% elseif artist.status == 'Approved' %}
+                            <span class="approved-label">✓ APPROVED</span>
+                            <form method="post"><input type="hidden" name="event_artist_id" value="{{ artist.event_artist_id }}"><input type="hidden" name="action" value="reject"><button type="submit" class="reject-button">REJECT</button></form>
+                        {% else %}
+                            <span class="rejected-label">REJECTED</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block body_attr %}{% endblock %}
+{% set nav_current = 'dashboard' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block topbar %}
+    <header class="dash-topbar">
+        <h1>Admin Dashboard</h1>
+        <div class="dash-admin-chip">{{ admin_name }}</div>
+    </header>
+{% endblock %}
+
+{% block content %}
+
+    <div class="dash-stats">
+        <div class="dash-stat-card">
+            <p class="dash-stat-label">Total Reservations</p>
+            <p class="dash-stat-value">{{ total_reservations }}</p>
+            <p class="dash-stat-sub">{{ upcoming_reservations }} upcoming</p>
+        </div>
+        <div class="dash-stat-card">
+            <p class="dash-stat-label">Newsletter Subscribers</p>
+            <p class="dash-stat-value">{{ total_subscribers }}</p>
+            <p class="dash-stat-sub">total signed up</p>
+        </div>
+        <div class="dash-stat-card">
+            <p class="dash-stat-label">Unread Messages</p>
+            <p class="dash-stat-value">{{ unread_messages }}</p>
+            <p class="dash-stat-sub">need a reply</p>
+        </div>
+        <div class="dash-stat-card dash-stat-alert">
+            <p class="dash-stat-label">Pending Approvals</p>
+            <p class="dash-stat-value">{{ pending_artists + pending_artworks + pending_reviews }}</p>
+            <p class="dash-stat-sub">across artists, artworks, reviews</p>
+        </div>
+    </div>
+
+    <div class="dash-panels">
+
+        <div class="dash-chart-card">
+            <h2>Reservations This Year — {{ current_year }}</h2>
+            <div class="dash-chart">
+                {% set max_count = max(monthly_counts|merge([1])) %}
+                {% for month, count in monthly_counts %}
+                    {% set pct = (count / max_count * 100)|round %}
+                    {% if pct < 4 and count > 0 %}{% set pct = 4 %}{% endif %}
+                    <div class="dash-bar-col">
+                        <div class="dash-bar{{ count > 0 ? '' : ' dash-bar-empty' }}"
+                             style="height: {{ max(pct, 3) }}%;"
+                             title="{{ count }} reservation{{ count == 1 ? '' : 's' }}"></div>
+                        <span>{{ month }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dash-recent-card">
+            <h2>Recent Reservations</h2>
+            {% if recent_reservations is empty %}
+                <p class="dash-empty">No reservations yet.</p>
+            {% else %}
+                <ul class="dash-recent-list">
+                    {% for r in recent_reservations %}
+                        <li>
+                            <span class="dash-recent-name">{{ r.reservation_name }}</span>
+                            <span class="dash-recent-detail">
+                                {{ r.reservation_date|date('M j') }} · {{ r.reservation_time|date('g:i A') }} · {{ r.guests }} guest{{ r.guests == 1 ? '' : 's' }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="dash-pending-card">
+        <h2>Pending Actions</h2>
+        <div class="dash-pending-pills">
+            <a href="{{ path('admin_artists') }}" class="dash-pill dash-pill-warn">Artist Applications <span>{{ pending_artists }}</span></a>
+            <a href="{{ path('admin_artworks') }}" class="dash-pill dash-pill-warn">Artwork Approvals <span>{{ pending_artworks }}</span></a>
+            <a href="{{ path('admin_reviews') }}" class="dash-pill dash-pill-warn">Review Approvals <span>{{ pending_reviews }}</span></a>
+            <a href="{{ path('admin_messages') }}" class="dash-pill dash-pill-danger">Unread Messages <span>{{ unread_messages }}</span></a>
+        </div>
+    </div>
+
+{% endblock %}

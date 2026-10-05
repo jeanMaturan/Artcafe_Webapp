@@ -1,0 +1,73 @@
+{# One template for both Add and Edit Product. Variables: mode (add|edit), categories, product #}
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ mode == 'add' ? 'Add Product' : 'Edit Product' }}{% endblock %}
+{% set nav_current = 'products' %}
+{% block topbar %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_add_artwork.css') }}">
+    {% if mode == 'edit' %}<link rel="stylesheet" href="{{ asset('css/admin/admin_products.css') }}">{% endif %}
+{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+
+    <div class="admin-page-title">
+        <h2>{{ mode == 'add' ? 'ADD PRODUCT' : 'EDIT PRODUCT' }}</h2>
+        <p>{{ mode == 'add' ? 'Add a new coffee, pastry, or merch item to the catalog.' : 'Update the details for this item.' }}</p>
+    </div>
+
+    <div class="admin-form-card">
+
+        {% if mode == 'edit' and product.image %}
+            <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}" class="product-current-image">
+        {% endif %}
+
+        {# TODO (later): replace with a Symfony FormType (ProductType) #}
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="admin-form-group">
+                <label for="category">CATEGORY</label>
+                <select id="category" name="category" required>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}"{{ product.category == cat ? ' selected' : '' }}>{{ cat|upper }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="name">PRODUCT NAME</label>
+                <input type="text" id="name" name="name" value="{{ product.name }}"{% if mode == 'add' %} placeholder="e.g. Caramel Macchiato"{% endif %} required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="description">DESCRIPTION</label>
+                <textarea id="description" name="description" rows="4"{% if mode == 'add' %} placeholder="Short description shown on the menu"{% endif %}>{{ product.desc }}</textarea>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="price">PRICE (₱)</label>
+                <input type="number" id="price" name="price" value="{{ product.price }}"{% if mode == 'add' %} placeholder="0.00"{% endif %} min="0" step="0.01" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="product_image">{{ mode == 'add' ? 'PRODUCT IMAGE' : 'REPLACE IMAGE' }}</label>
+                <input type="file" id="product_image" name="product_image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                <small class="admin-file-help">{{ mode == 'add' ? 'JPG, PNG, or WEBP. Optional.' : 'Leave empty to keep the current image.' }}</small>
+            </div>
+
+            <div class="admin-form-actions">
+                <a href="{{ path('admin_products', {category: product.category}) }}" class="admin-cancel-button">CANCEL</a>
+                <button type="submit" class="admin-login-button">{{ mode == 'add' ? 'ADD PRODUCT' : 'SAVE CHANGES' }}</button>
+            </div>
+
+        </form>
+    </div>
+
+</main>
+{% endblock %}

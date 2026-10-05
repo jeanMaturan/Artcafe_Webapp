@@ -1,0 +1,36 @@
+{#- Shared admin layout. Each page sets nav_current (top-level {% set %}) and overrides: title, stylesheets, content. -#}
+{%- set admin_name = 'Admin' -%}{# TODO (later): replace with app.user.name once login exists #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} | Maturan's Art Cafe</title>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body{% block body_attr %} class="admin-dashboard-page"{% endblock %}>
+
+<div class="dash-layout">
+
+    {% include 'admin/_sidebar.html.twig' with { active: nav_current|default('') } only %}
+
+    <div class="dash-main">
+
+        {% block topbar %}
+            <header class="dash-topbar">
+                <div class="dash-admin-chip">{{ admin_name }}</div>
+            </header>
+        {% endblock %}
+
+        {% block content %}{% endblock %}
+
+    </div>
+
+</div>
+
+{% block javascripts %}
+    <script src="{{ asset('js/admin-static.js') }}"></script>
+{% endblock %}
+
+</body>
+</html>

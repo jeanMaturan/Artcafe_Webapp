@@ -1,0 +1,70 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Artwork Management{% endblock %}
+{% set nav_current = 'artworks' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_artworks.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+
+    <div class="admin-page-title">
+        <h2>ARTWORK MANAGEMENT</h2>
+        <p>Review and manage artwork submissions from approved artists.</p>
+    </div>
+
+    <section class="clean-admin-section">
+        <div class="clean-section-heading">
+            <h3>PENDING ARTWORKS</h3>
+            <span>{{ pending|length }} pending</span>
+        </div>
+        {% if pending is empty %}
+            <div class="clean-empty"><p>No artwork submissions are waiting for approval.</p></div>
+        {% else %}
+            <div class="clean-artwork-grid">
+                {% for artwork in pending %}
+                    {% include 'admin/_artwork_card.html.twig' with { status_class: 'pending', show_actions: true } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="clean-admin-section artwork-section">
+        <div class="clean-section-heading">
+            <h3>APPROVED ARTWORKS</h3>
+            <span>{{ approved|length }} artworks</span>
+        </div>
+        {% if approved is empty %}
+            <div class="clean-empty"><p>No approved artworks yet.</p></div>
+        {% else %}
+            <div class="clean-artwork-grid">
+                {% for artwork in approved %}
+                    {% include 'admin/_artwork_card.html.twig' with { status_class: 'approved', show_actions: false } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="clean-admin-section artwork-section">
+        <div class="clean-section-heading">
+            <h3>REJECTED ARTWORKS</h3>
+            <span>{{ rejected|length }} rejected</span>
+        </div>
+        {% if rejected is empty %}
+            <div class="clean-empty"><p>No rejected artworks.</p></div>
+        {% else %}
+            <div class="clean-artwork-grid">
+                {% for artwork in rejected %}
+                    {% include 'admin/_artwork_card.html.twig' with { status_class: 'rejected', show_actions: false } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+{% endblock %}
